@@ -1,12 +1,16 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { HttpExceptionFilter } from './http-exception.filter';
+import { ValidationPipe } from '@nestjs/common';
 
 declare const module: any;
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule); // main에서 처음으로 가는 곳이 module이다.
   const port = process.env.PORT || 3000;
+  app.useGlobalPipes(new ValidationPipe());
+  app.useGlobalFilters(new HttpExceptionFilter());
 
   const config = new DocumentBuilder()
     .setTitle('Sleact API')
