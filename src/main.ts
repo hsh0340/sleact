@@ -3,13 +3,14 @@ import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { HttpExceptionFilter } from './http-exception.filter';
 import { ValidationPipe } from '@nestjs/common';
+import passport = require('passport');
 
 declare const module: any;
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule); // main에서 처음으로 가는 곳이 module이다.
   const port = process.env.PORT || 3000;
-  app.useGlobalPipes(new ValidationPipe());
+  app.useGlobalPipes(new ValidationPipe()); // to use class-validator
   app.useGlobalFilters(new HttpExceptionFilter());
 
   const config = new DocumentBuilder()
@@ -20,6 +21,9 @@ async function bootstrap() {
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
+
+  app.use(passport.initialize());
+  app.use(passport.session());
 
   await app.listen(port);
   console.log(`listening on port ${port}`);
